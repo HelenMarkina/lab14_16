@@ -15,6 +15,8 @@ void print_result(int sum, int min, int max);
 
 double* fill_random(double* ptr_array, int size);
 int delete_k(double* ptr_arr, int size, double element);
+int find_last_negative(double* ptr_arr, int size);
+double* insert(double* ptr_arr, int* size, int index, double num);
 
 int main() {
 	setlocale(LC_ALL, "");
@@ -95,8 +97,26 @@ int main() {
     scanf("%lf", &element);
 
     int new_size = delete_k(arr2, size2, element);
-    printf("Массив после удаления элементов > %.2f:\n", element);
+    printf("Массив после удаления элементов:\n");
     put_elements(arr2, new_size);
+
+    // 2.2 Вставка -999 после последнего отрицательного
+    printf("\n\n2.2 Вставка -999 после последнего отрицательного\n");
+    
+    int last_negative_index = find_last_negative(arr2, new_size);
+
+    if (last_negative_index != -1) {
+        arr2 = insert(arr2, &new_size, last_negative_index + 1, -999.0);
+        printf("Массив после вставки -999:\n");
+        put_elements(arr2, new_size);
+    }
+    else {
+        printf("Отрицательных элементов не найдено.\n");
+    }
+
+    free(arr2);
+
+    return 0;
 }
 
 double* full_elements(double* ptr_array, int size) {
@@ -202,4 +222,37 @@ int delete_k(double* ptr_arr, int size, double element) {
 
     printf("Удалено элементов: %d\n", size - new_size);
     return new_size;
+}
+
+// ЛР 16. Задание 2.2 - Вставка -999 после последнего отрицательного
+// Поиск индекса последнего отрицательного элемента
+int find_last_negative(double* ptr_arr, int size) {
+    int last_index = -1;
+    for (int i = 0; i < size; i++) {
+        if (ptr_arr[i] < 0) {
+            last_index = i;
+        }
+    }
+    return last_index;
+}
+
+// Функция вставки элемента в массив
+double* insert(double* ptr_arr, int* size, int index, double num) {
+    int size_n = (*size) + 1;
+
+    if (ptr_arr == NULL) return NULL;
+
+    double* ptr_arr_n = (double*)realloc(ptr_arr, size_n * sizeof(double));
+    if (ptr_arr_n == NULL) return ptr_arr;
+
+    ptr_arr = ptr_arr_n;
+
+    for (int i = size_n - 1; i > index; i--) {
+        ptr_arr[i] = ptr_arr[i - 1];
+    }
+
+    ptr_arr[index] = num;
+    *size = size_n;
+
+    return ptr_arr;
 }
